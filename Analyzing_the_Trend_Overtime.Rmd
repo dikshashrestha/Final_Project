@@ -1,0 +1,93 @@
+---
+title: "Analyzing the trend over time"
+author: "Diksha Shrestha"
+date: "4/7/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+library(dplyr)
+
+```
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+```
+
+
+#finding the average sale price across different cities using group_by function
+```{r}
+New_Data = read.csv("New_Data.csv")
+Trend <- New_Data %>%
+  dplyr::select(City, Year, Sale_Price) %>%
+  group_by(City, Year) %>%
+  summarise(Average_Sale_Price = mean(Sale_Price)) 
+
+
+View(Trend)
+
+  
+```
+
+#Preprocessing the Average Sale Price in Thousands
+```{r}
+
+Trend$Avg_Sale_Price <- (Trend$Average_Sale_Price)/1000
+Trend
+```
+#Extracting the trend file
+```{r}
+write.csv(Trend,"~/STA 518/Final_Project/Trend.csv", row.names = TRUE)
+```
+
+
+#Line Graph of all the cities showing the average sale price.
+```{r}
+
+ggplot(Trend, aes(x=Year, y = Avg_Sale_Price, colour = City)) + 
+  geom_line()+
+  labs(y = 'Avg Sale Price(In Thousands)', title = 'Average Sale Price across cities')
+
+```
+#Summary of data
+```{r}
+Trend %>%
+  summary(Average_Sale_Price)
+```
+
+#Line Graph of 4 cities except Queens
+```{r}
+Four_Cities <- Trend %>%
+  filter(City != "Queens")
+
+Four_Cities
+```
+#Extracting the Four City file
+```{r}
+write.csv(Four_Cities,"~/STA 518/Final_Project/Four_Cities.csv", row.names = TRUE)
+```
+
+#Line Graph of four_cities showing the average sale price.
+```{r}
+ggplot(Four_Cities, aes(x = Year, y = Avg_Sale_Price, colour = City))+
+  geom_line()+
+  labs(y = 'Avg Sale Price(In Thousands)', title = 'Average Sale Price of four cities')
+
+```
+
+#Summary of data
+```{r}
+Four_Cities %>%
+  summary(Average_Sale_Price)
+```
+
+
+
+
