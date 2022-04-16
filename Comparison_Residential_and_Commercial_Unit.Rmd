@@ -1,0 +1,92 @@
+---
+title: "Comparing_Residential_and_Commercial_Unit"
+author: "Diksha Shrestha"
+date: "4/10/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Selecting the Residential and Commercial Units
+```{r}
+Unit <- New_Data %>%
+  dplyr::select(Residential_Units, Commercial_Units, Year, Borough, City)%>%
+  group_by(Year, City) 
+
+Unit
+```
+
+
+#Selecting the Residential Units Only
+```{r}
+Residential <- New_Data %>%
+  select(Residential_Units, Year, Borough, City) %>%
+  group_by(City, Year)
+
+Residential
+```
+
+
+#Calculating the total number of Residential Units
+```{r}
+Residential_Sum <- New_Data %>%
+  dplyr::select(Residential_Units, Year, Borough, City) %>%
+  group_by(City, Year)%>%
+  summarise(Sum_Residential = sum(Residential_Units))
+ 
+
+Residential_Sum
+```
+
+#Extracting the file 
+```{r}
+
+write.csv(Residential_Sum,"~/STA 518/Final_Project/Residential_Sum.csv", row.names = TRUE)
+```
+
+#Bar Graph showing the number of  Residential Unit
+```{r}
+ggplot(Residential_Sum, aes(x = Year, y = Sum_Residential))+
+  geom_bar(stat = "identity", fill = "aquamarine3")+
+  labs(y = 'Residential Unit ', title = "Number of Residential Unit sold over the Year")
+```
+
+
+
+
+
+#Selecting the Commercial Units Only
+```{r}
+Commercial <- New_Data %>%
+  dplyr::select(Commercial_Units, City, Year, Borough) %>%
+  group_by(Year, City) 
+
+Commercial
+```
+#Calculating the total sum of Commercial Units
+```{r}
+Commercial_Sum <- New_Data %>%
+  dplyr::select(Commercial_Units, Year, City, Borough) %>%
+  group_by(City, Year)%>%
+  summarise(Sum_Commercial = sum(Commercial_Units))
+
+Commercial_Sum
+```
+#Extracting the file 
+```{r}
+
+write.csv(Commercial_Sum,"~/STA 518/Final_Project/Commercial_Sum.csv", row.names = TRUE)
+```
+
+#BarGraph showing the number of commercial units
+```{r}
+ggplot(Commercial_Sum, aes(x = Year, y = Sum_Commercial))+
+  geom_bar(stat = "identity", fill = "deepskyblue3")+
+  labs(y = ' Commercial Unit', title = "Number of Commercial Unit sold over the year")
+```
+
+
+
+
