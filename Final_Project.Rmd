@@ -1,0 +1,109 @@
+---
+title: "Final_Project"
+author: "Diksha Shrestha"
+date: "4/6/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+
+```
+
+```{r}
+library(readxl)
+```
+
+```{r}
+excel_sheets("City_Data.xlsx")
+```
+```{r}
+excel_sheets("City_Data.xlsx") %>% map(~read_xlsx("City_Data.xlsx",.))
+```
+
+
+```{r}
+Data <- excel_sheets("City_Data.xlsx") %>% map_df(~read_xlsx("City_Data.xlsx",.))
+```
+
+```{r}
+excel_sheets("City_Data.xlsx") %>% map_df(~read_xlsx("City_Data.xlsx",.)) %>% tail()
+```
+#Removing the empty object using omit function
+```{r}
+Data <- na.omit(Data)
+Data
+```
+
+#Removing the 0s using the dplyr(filter) function
+```{r}
+Data = Data[!(is.na(Data$Land_Square_Feet) | Data$Land_Square_Feet == "0"),]
+
+```
+
+
+```{r}
+Data = Data[!(is.na(Data$Gross_Square_Feet) | Data$Gross_Square_Feet == "0"),]
+
+```
+
+
+```{r}
+Data = Data[!(is.na(Data$Sale_Price) | Data$Sale_Price == "0"),]
+Data
+```
+```{r}
+New_Data <- Data
+New_Data = New_Data[!nchar(as.character(New_Data$Sale_Price))<5,]
+New_Data
+```
+
+```{r}
+table(New_Data["Sale_Price"])
+```
+
+
+#Dropping a specific coluumn using dplyr (select) function
+```{r}
+Data_dr = dplyr::select(New_Data, -c(Tax_Class_At_Present, Apartment_Number, Residential_Units, Commercial_Units, Total_Units, Tax_Class_At_Time_Of_Sale, Year ))
+head (Data_dr)
+```
+
+
+
+#Selecting only 10% of the data using dplyr fucntion
+```{r}
+#Datas <- sample_frac(New_Data, 0.1)
+#view(Datas)
+```
+
+```{r}
+library(lubridate)
+```
+
+#Extracting year from the date using the lubridate function
+```{r}
+New_Data$Sale_Date <- as_date(New_Data$Sale_Date)
+New_Data$Years <- as.numeric(format(New_Data$Sale_Date,"%Y"))
+head (New_Data)
+```
+
+```{r}
+write.csv(New_Data,"~/STA 518/Final_Project/New_Data.csv", row.names = TRUE)
+```
+
+
+```
+
+
+
+
+
+
+
