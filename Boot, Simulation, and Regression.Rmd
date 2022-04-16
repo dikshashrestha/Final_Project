@@ -1,0 +1,96 @@
+---
+title: "Bootstrap"
+author: "Diksha Shrestha"
+date: "4/14/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+avocado <- read.csv("Avo.csv")
+avocado
+```
+
+
+```{r}
+avocado = avocado[!(is.na(avocado$AveragePrice) | avocado$AveragePrice == "0"),]
+```
+
+```{r}
+avocado = avocado[!(is.na(avocado$TotalVolume) | avocado$TotalVolume == "0"),]
+```
+
+
+```{r}
+library(dplyr)
+```
+
+```{r}
+avocado %>%
+  mutate(Date = as.Date(Date, "'%m,%d,%Y"))
+
+avocado
+```
+
+
+
+```{r}
+library(boot)
+
+avo <- function(avocado, i){
+ d2 <- avocado[i,] 
+ return(cor(d2$AveragePrice, d2$TotalVolume))
+}
+
+```
+
+The above function uses the dataset from the avocado and i refers to the vector which means that the rows from the avocado dataset will be chosen to perform the bootstrap sample.
+
+```{r}
+set.seed(1)
+bootstrap_correlation <- boot(avocado,avo,R=10000)
+```
+
+The set seed function is used to select the same random number every time we run the same code chunk to ensure we get the same result.
+
+
+```{r}
+bootstrap_correlation
+```
+From the above code, we can see that the original correlation between the average price and the total volume is **-0.533** and the standard error between them is **0.061**. This negative correlation shows that the both the variable moves in different direction ad has a negative relationship.
+
+
+```{r}
+summary(bootstrap_correlation)
+```
+The above code chunk provides the summary of the correlation.
+
+```{r}
+range(bootstrap_correlation$t)
+```
+
+Through the range bootstrap code, we can find the range of the correlation co-efficient which is between **-0.739** to **-0.306**.
+
+```{r}
+mean(bootstrap_correlation$t)
+```
+We can see that the mean of the coorelation coefficient is negative which is **-0.533**.
+
+```{r}
+sd(bootstrap_correlation$t)
+```
+
+We can also know the standard deviation which is **0.0613**.
+
+
+
+```{r}
+boot.ci(boot.out=bootstrap_correlation,type=c('norm','basic','perc','bca'))
+```
+The above function shows the confidence interval of the normal, basic, percentile and bca distribution.
+
+
+
