@@ -1,0 +1,79 @@
+---
+title: "Untitled"
+author: "Diksha Shrestha"
+date: "4/9/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(plotly)
+library(tidyr)
+New_Data <- read.csv("New_Data.csv")
+#Finding the density of sale across cities
+City_Density <- New_Data%>% 
+  dplyr::select(City) %>% 
+  gather(metric, value) %>% 
+  ggplot(aes(value, fill = metric)) + 
+  geom_density(show.legend = FALSE) + 
+  facet_wrap(~ metric, scales = "free")
+
+ggplot(New_Data, aes(x = City)) +
+  geom_density(fill = 'cyan')+
+  labs(title = 'Density of Sale Across cities of NewYork')
+
+```
+
+
+#Finding the distribution of sale count over each year
+```{r}
+Sale_Dist <- New_Data['Year']
+
+# library
+library(ggplot2)
+ 
+# basic histogram
+Histo <- ggplot(Sale_Dist, aes(x=Year)) + 
+  geom_histogram(binwidth = 1, colour = "white", fill = "coral")+
+  labs(title = 'Distribution of Sale count over the year')
+Histo
+```
+#extracting the Sale Count file
+
+
+```{r}
+write.csv(Sale_Dist,"~/STA 518/Final_Project/Sale_Dist.csv", row.names = TRUE)
+```
+
+
+#Sale Price over the years
+
+```{r}
+Price <- New_Data %>%
+  select( Year, Sale_Price) %>%
+  group_by( Year) %>%
+  summarise(Average_Sale_Price = mean(Sale_Price)) 
+
+
+View(Price)
+```
+
+```{r}
+Price$Avg_Sale_Price <- (Price$Average_Sale_Price)/1000
+Price
+```
+
+
+```{r}
+ggplot(Price, aes(x=Year, y = Avg_Sale_Price)) + 
+  geom_line(colour = "cornflowerblue")+
+  labs(y = 'Avg Sale Price(In Thousands)', title = 'Average Sale Price across cities')
+```
+
+```{r}
+write.csv(Price,"~/STA 518/Final_Project/Price.csv", row.names = TRUE)
+```
+
