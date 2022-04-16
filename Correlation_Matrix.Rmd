@@ -1,0 +1,58 @@
+---
+title: "Correlation of Land Square with Average Sale Price"
+author: "Diksha Shrestha"
+date: "4/9/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+```
+
+```{r}
+New_Data <- read.csv(file = "New_Data.csv")
+```
+
+#Selecting the required columns for the correlation matrix
+```{r}
+
+Correl <- New_Data %>% 
+  select(Year,Year_Built,Residential_Units,Commercial_Units,Sale_Price, Borough)
+  
+
+Correl
+```
+#Extracting the file
+```{r}
+write.csv(Correl,"~/STA 518/Final_Project/Correl.csv", row.names = TRUE)
+```
+
+
+
+#Correlation Matrix for the selected column
+
+```{r}
+library(corrplot)
+```
+
+
+```{r}
+library(MASS)
+library(corrr)
+corelation=cor(Correl)
+corelation
+
+library(ggcorrplot)
+ggcorrplot(corelation)
+
+```
+
+
+
+
+
+
