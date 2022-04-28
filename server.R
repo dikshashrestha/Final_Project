@@ -10,6 +10,9 @@ library(MASS)
 library(corrr)
 library(ggcorrplot)
 library(gganimate)
+library(gifski)
+library(IRdisplay)
+
 function(input, output,session){
   
   
@@ -23,6 +26,8 @@ function(input, output,session){
       labs(y = 'Avg Sale Price(In Thousands)', title = 'Average Sale Price across cities')
     })
   
+  
+  
   #Line Graph of four cities escluding Queens
 
   output$linegraph <-renderPlot({
@@ -34,19 +39,19 @@ function(input, output,session){
   })
   
   
-  # output$linegraph <-renderImage({
-  #   Four_Cities <- read.csv(file ='Four_Cities.csv')
-  # 
-  #   outfile <- tempfile(fileext='.gif')
-  #   q= ggplot(Four_Cities, aes(x = Year, y = Avg_Sale_Price, colour = City))+
-  #     geom_line(stat='identity')+ theme_bw() + transition_reveal(Year)
-  # 
-  #   anim_save("linegraph.gif", animate(q,height=400,width=800,fps=20,duration=20,end_pause=60,res=120))
-  #   list(src = "linegraph.gif",
-  #        contentType = 'image/gif'
-  # 
-  #   )}, deleteFile = FALSE)
-  
+  output$linegraph <-renderImage({
+    Four_Cities <- read.csv(file ='Four_Cities.csv')
+
+    outfile <- tempfile(fileext='.gif')
+    q= ggplot(Four_Cities, aes(x = Year, y = Avg_Sale_Price,fill=City, colour = City))+
+      geom_line(stat='identity')+ theme_bw() + transition_reveal(Year)
+
+    anim_save("linegraph.gif", animate(q,height=400,width=800,fps=20,duration=20,end_pause=60,res=120))
+    list(src = "linegraph.gif",
+         contentType = 'image/gif'
+
+    )}, deleteFile = FALSE)
+
   
   
   #Across city density distribution
@@ -103,6 +108,18 @@ function(input, output,session){
     
   })
   
+  Residential_Sum <- read.csv("Residential_Sum.csv")
+  output$bargraph <- renderPlot({
+    
+    
+    
+    df <- Residential_Sum %>% filter(City==input$city)
+    g <- ggplot(df, aes( y = Sum_Residential, x = Year,fill=Year))
+    g+ geom_bar(stat='identity') +scale_x_discrete(guide = guide_axis(check.overlap = TRUE))
+    
+  })
+  
+  
   #Number of Commercial Unit sold
   Commercial_Sum <- read.csv("Commercial_Sum.csv")
   output$commer <- renderPlot({
@@ -111,6 +128,17 @@ function(input, output,session){
       labs(y = ' Commercial Unit', title = "Number of Commercial Unit sold over the year")
   })
   
+
+  
+  Commercial_Sum <- read.csv("Commercial_Sum.csv")
+  output$c_bargraph <- renderPlot({
+ 
+    
+    df2 <- Commercial_Sum %>% filter(City==input$c_city)
+    g <- ggplot(df2, aes( y = Sum_Commercial, x = Year,fill=Year))
+    g+ geom_bar(stat='identity') +scale_x_discrete(guide = guide_axis(check.overlap = TRUE))
+    
+  })
   
   
   
