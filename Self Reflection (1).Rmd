@@ -1,0 +1,536 @@
+---
+title: "Self Reflection"
+author: "Diksha Shrestha"
+date: "4/15/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Provide a URL for your final project. If you created a Shiny App as your data product, you should include a link to the GitHub repository that contains your code as well as a link to your Shiny App hosted on shinyapp.io (see Chapter 2 of the shinyapps.io User Guide - this is free, but you need to sign up for an account). If you created some other type of data product, you should include a link to the GitHub repository that contains your coce as well as a direct link to your data product.###
+
+My final project is NewYork Property Price Analysis. Please find the link to my Github here: 
+[Project] (https://github.com/dikshashrestha/Final_Project)
+I have also created a Shiny app, please find the link to it. [Shiny](https://dikshashrestha.shinyapps.io/Final_Project/?_ga=2.79845905.723130259.1650075275-1181248765.1650075275)
+
+
+### Did you work with a group? If so, include the names of your other group members here.###
+No, I worked individually for my project.
+
+### A thorough reflection on your work in this class. Talk about the work you've done for the course. Remember that I am interested in the progress have you made towards each course-level learning objectives. Look through your work to determine what you could use to demonstrate (show and discuss) your progress. Provide links directly to your evidence or embed snapshot examples of your work. Be sure to describe how your work demonstrates your progress towards each objectives. Consider the work you did on the final project, your work earlier in the term, the feedback you offered your peers on their work, and how you met your own goals. Feel free to include more links to examples of your work as necessary (again, please point directly to the specific work - not some general document link - so that I can easily review it). Tell me what you are particularly proud of. This is the place to be as honest as possible about your work, both reflecting critically and talking about what you proved capable of in the midst of an incredibly challenging semester. Remember that this is a reflection about your work, not your classmates.###
+
+My growth in this course has always been progressive. As I had never worked on R before, I was skeptical about it to be a difficult programming language. However, with each class and the class activities, it boosted my confidence and enhanced my knowledge on this programming language. Although, it has a different syntax than that of the Python language, this course has helped me gain an in-depth knowledge of its syntax and the packages. Similarly, the implementation of all the learning and class activities in my final project boosted my knowledge of R in much more detail. I build a shiny app to analyze the NewYork Property Price from 2015 to 2019 which was a major learning factor for me which implemented all the course activities and learning. I further did some mini projects to implement my course learning which led to additional knowledge discovery. Hence, I believe I have met all the course objectives. Please refer below for the codes, screenshots, and the github links which shows I have met the course objectives.
+
+**Objective 1: Import, manage, and clean data**
+
+At the beginning, before starting my project, I thought the data cleaning was the most daunting task. The first process of cleaning started when I imported my file in Rstudio. Firstly, I had imported my file in the Rstudio to start my cleaning procedure. I wanted to remove the empty objects and NAN values and for some columns removing the value with 0 to perform my task, so I cleaned my dataset using the na omit and isna function. Similarly, after getting the organized and the clean dataset, I managed the data by using the select, group by, summarise, mutate, merge, and pivot function to manage the column that was required to perform my task. I imported, managed and cleaned the data during my final project to build shiny app and in my mini projects as well. I have imported the csv file and excel files into a dataframes to proceed with my project. Please find my codes below where I have executed the codes.
+
+**Shiny Project**
+
+*Import*
+
+I imported the file from the excel sheet and mapped it in the list. Also, the below code shows the mapping it into the dataframe. Through importing the data and mapping it into the dataframe, I was able to clean and manage my dataset as per the data I required for achieving my objectives.
+
+```{r}
+library(DT)
+library(readxl)
+library(plotly)
+library(tidyr)
+library(ggplot2)
+library(corrplot)
+library(MASS)
+library(corrr)
+library(ggcorrplot)
+```
+
+Here I have used a map function through which I was able to return the data as a list. I'm now able to perform the map function easily where I require to turn it into list.
+```{r}
+# excel_sheets("City_Data.xlsx") %>% map(~read_xlsx("City_Data.xlsx",.))
+```
+
+```{r}
+#Data <- excel_sheets("City_Data.xlsx") %>% map_df(~read_xlsx("City_Data.xlsx",.))
+```
+
+This code chunk extracts each sheet from the City Data excel sheet which helped me to work on each sheet from the excel sheets. 
+```{r}
+excel_sheets("City_Data.xlsx")
+```
+
+```{r}
+Data <- read.csv('New_Data.csv')
+```
+
+
+
+*Clean*
+
+I executed the below code to clean my data by removing the empty objects, NAN values, and 0s from the dataset which made my dataset a structural dataset which was easy to follow. I'm now able to clean my dataset by using the na.omit function which automatically removes the empty datas.
+```{r}
+# Data <- na.omit(Data)
+# Data
+```
+
+```{r}
+Data <- read.csv('New_Data.csv')
+```
+
+
+```{r}
+Data = Data[!(is.na(Data$Land_Square_Feet) | Data$Land_Square_Feet == "0"),]
+```
+
+```{r}
+Data = Data[!(is.na(Data$Gross_Square_Feet) | Data$Gross_Square_Feet == "0"),]
+```
+
+```{r}
+Data = Data[!(is.na(Data$Sale_Price) | Data$Sale_Price == "0"),]
+```
+
+*Manage*
+
+Additionally, I also managed my dataset using the dplyr function where I selected only the columns I needed to perform the task and removed the columns that were not needed.
+
+```{r}
+# Data_dr = dplyr::select(New_Data, -c(Tax_Class_At_Present, Apartment_Number, Residential_Units, Commercial_Units, Total_Units, Tax_Class_At_Time_Of_Sale, Year ))
+# head (Data_dr)
+```
+
+
+I have also used the dplyr functions such as select, filter, summarize to know the average sale price of the NewYork city. This function helped me to achieve my task to analyze the trend across the cities over 5 years.
+
+```{r}
+library(dplyr)
+New_Data = read.csv("New_Data.csv")
+Trend <- New_Data %>%
+  dplyr::select(City, Year, Sale_Price) %>%
+  group_by(City, Year) %>%
+  summarise(Average_Sale_Price = mean(Sale_Price))
+
+
+
+```
+
+Furthermore, there were other task for which I have used the dplyr functions. I wanted to find out the total sum of the residential unit sold over the years across the city. Hence, I performed the dplyr function i.e. select and group by to group the columns I wanted.
+
+```{r}
+
+New_Data = read.csv("New_Data.csv")
+Residential_Sum <- New_Data %>%
+  dplyr::select(Residential_Units, Year, Borough, City) %>%
+  group_by(City, Year)%>%
+  summarise(Sum_Residential = sum(Residential_Units))
+ 
+
+```
+
+I have used the lubridate function to extract only years from the sale's Date column so that I could analyze the trend over the years.
+
+```{r}
+library(lubridate)
+```
+
+```{r}
+New_Data$Sale_Date <- as_date(New_Data$Sale_Date)
+New_Data$Years <- as.numeric(format(New_Data$Sale_Date,"%Y"))
+head (New_Data)
+```
+
+
+**Mini Project**
+
+*Import*
+
+I have also imported the csv file to process my mini project. I can now easily import the different files such as csv, excel, json. While researching for the excel and csv file, I further researched on iporting the json file as well. 
+
+```{r}
+avocado <- read.csv("Avo.csv")
+head(avocado)
+```
+
+*Clean*
+
+I have also cleaned the data as I have removed the 0s, NANs and empty object in the dataset.
+
+```{r}
+avocado = avocado[!(is.na(avocado$AveragePrice) | avocado$AveragePrice == "0"),]
+```
+
+```{r}
+avocado = avocado[!(is.na(avocado$TotalVolume) | avocado$TotalVolume == "0"),]
+```
+
+*Manage*
+
+I have used the dplyr's mutate function which provided the numerical value as per the MM/DD/YYY format.
+```{r}
+avo1 <-avocado %>%
+  mutate(Date = as.Date(Date, "'%m,%d,%Y"))
+
+head(avo1)
+
+```
+
+**Mini Project**
+
+*Import*
+
+I have imported the csv file for the two dataset which consists the food caloreis and the other consist the servings to gram.
+
+```{r}
+cal <- read.csv("Calories.csv")
+ser <- read.csv("Serving.csv")
+```
+
+
+*Manage*
+
+I have used a merge function to join the two dataset into one dataset. This performs an inner join where it returns the rows that have matching in left and right table.
+
+```{r}
+food <- merge(cal,ser,by="Food")
+head(food)
+```
+
+![merg](Images/Merge.png)
+
+**Mini Project**
+
+*Import*
+
+```{r}
+Sale <- read.csv("CitPrice.csv")
+head(Sale)
+```
+
+![year](Images/Year.png)
+
+*Manage*
+
+```{r}
+sale_data <- pivot_wider(Sale,names_from = Year, values_from = Average.Sale.Price)
+sale_data
+```
+
+![pivot](Images/Pivot.png)
+
+I have used the pivot_wider function which increased the columns for each year and decreased the rows.
+
+**Conclusion for Objective 1 on how I met the Objectives**
+
+I believe I have met the Objective 1 of importing, managing, and cleaning the data as I have imported the excel and csv file to work on my dataset. Also, I have restructured the data using the dplyr function such as pipe, select, filter, groupby, summarise, merge, mutate, and pivot function. Furthermore, I have isolated my large dataset of NewYork property prices into a dataframe. Also, I have transformed the information to a numerical value using the mutate function on the date and have combined the information from the multiple dataset into one. Similarly, for my shiny project, I have used the lubridate function to format the date and extract the year only. Working on my shiny project has made a great contribution in enhancing my knowledge of data wrangling as I got to know an in-depth knowledge after getting errors in codes.
+
+
+**Objective 2: Create graphical displays and numerical summaries of data for exploratory analysis and presentations.**
+
+With the codes I have written after cleaning and managing the file, I wanted to show my visualization to the end user. So, I have also used the ggplot2 package to visualize my data from the dataframe. I have used different visualization using ggplot2 and which were line chart, bar graph, histogram, density distribution.
+
+
+I used the line graph to show the trend of the average sale price across the cities and used ggplot2 to visualize my data. Additionally, ggplot2 included the color function through which I used a categorical color scale to differentiate each cities with different color so that user could easily grasp the information on different cities using the colors.
+
+
+```{r}
+#ggplot(Trend, aes(x=Year, y = Avg_Sale_Price, colour = City)) + 
+   #geom_line()+
+   #labs(y = 'Avg Sale Price(In Thousands)', title = 'Average Sale Price across cities')
+```
+
+
+
+![Line](Images/Line.png)
+
+Similarly, to show the frequency distribution of the sale count of the residential unit, I used the ggplot2 's geom bar function which would show the number of units sold over the years.
+
+```{r}
+ggplot(Residential_Sum, aes(x = Year, y = Sum_Residential))+
+  geom_bar(stat = "identity", fill = "aquamarine3")+
+  labs(y = 'Residential Unit ', title = "Number of Residential Unit sold over the Year")
+```
+
+I have used the ggplot 2 and facet wrap here to find out the density. The facet_wrap is used to make a long ribbon and a 2D overlap visualization.
+
+```{r}
+library(plotly)
+library(tidyr)
+New_Data <- read.csv("New_Data.csv")
+#Finding the density of sale across cities
+City_Density <- New_Data%>% 
+  dplyr::select(City) %>% 
+  gather(metric, value) %>% 
+  ggplot(aes(value, fill = metric)) + 
+  geom_density(show.legend = FALSE) + 
+  facet_wrap(~ metric, scales = "free")
+
+ggplot(New_Data, aes(x = City)) +
+  geom_density(fill = 'cyan')+
+  labs(title = 'Density of Sale Across cities of NewYork')
+
+```
+
+
+I have also performed the geom_histogram to know the distribution of the sale count over the year. 
+
+```{r}
+Sale_Dist <- New_Data['Year']
+
+# library
+library(ggplot2)
+ 
+# basic histogram
+Histo <- ggplot(Sale_Dist, aes(x=Year)) + 
+  geom_histogram(binwidth = 1, colour = "white", fill = "coral")+
+  labs(title = 'Distribution of Sale count over the year')
+Histo
+```
+
+
+Furthermore to using ggplot2, I have also performed a exploratory analysis by executing the correlation matrix. For this task I wanted to know how much the variables were correlated to each other and upon researching in the internet, I came to know the correlation matrix which was the perfect visualization as I wanted. I further researched on the library and packages it needed and then executed my code as below which helped me to get the values of each variable correlated with each other along with its value.
+
+
+```{r}
+# library(MASS)
+# library(corrplot)
+# library(corrr)
+# #corelation=cor(Correl)
+# corelation
+# library(ggcorrplot)
+# ggcorrplot(corelation)
+```
+
+![corr](Images/Correlation.png)
+
+
+![core](Images/Number.png)
+
+
+**Conclusion for Objective 2 on how I met the Objectives**
+
+I have met the objective 2 where I have used the ggplot2 to visualize my data. Also, with the help of different visualization, I can analyze the data and extract the findings from each visualization. Similarly, I have performed the exploratory analysis to find the correlation coefficient among the variables. From this correlation matrix, we can see which variable has the correlation with the other variable and we can analyze that the sale price and the residential unit shows a correlation coefficient of **0.5** as shown in Figure 5 and 6. Performing different visualization, I'm now confident on making the visualization as required by the task.
+
+**Objective 3: Write R programs for simulations from probability models and randomization-based experiments.**
+
+This topic was really new to me and it was the course topic which included my most of the time. I had referred to the course activities and the internet on simulation, probability model, regression, and bootstrapping. I have executed the bootstrapping, simulation, regression and descriptive statistics method for this objective.
+
+
+**Bootstrapping**
+
+```{r}
+library(boot)
+
+avo <- function(avocado, i){
+ d2 <- avocado[i,] 
+ return(cor(d2$AveragePrice, d2$TotalVolume))
+}
+
+```
+
+The above function uses the dataset from the avocado and i refers to the vector which means that the rows from the avocado dataset will be chosen to perform the bootstrap sample.
+
+```{r}
+set.seed(1)
+bootstrap_correlation <- boot(avocado,avo,R=10000)
+```
+
+The set seed function is used to select the same random number every time we run the same code chunk to ensure we get the same result.
+
+```{r}
+bootstrap_correlation
+```
+
+![co](Images/Co.png)
+
+
+From the above code, we can see that the original correlation between the average price and the total volume is **-0.533** and the standard error between them is **0.061**. This negative correlation shows that the both the variable moves in different direction ad has a negative relationship.
+
+
+
+```{r}
+summary(bootstrap_correlation)
+```
+
+![sum](Images/Sum.png)
+
+The above code chunk provides the summary of the correlation.
+
+```{r}
+range(bootstrap_correlation$t)
+```
+
+![range](Images/Ranges.png)
+
+
+Through the range bootstrap code, we can find the range of the correlation co-efficient which is between **-0.739** to **-0.306**.
+
+```{r}
+mean(bootstrap_correlation$t)
+```
+
+![mean](Images/mean.png)
+
+We can see that the mean of the correlation coefficient is negative which is **-0.533**.
+
+```{r}
+sd(bootstrap_correlation$t)
+```
+
+![sd](Images/sd.png)
+
+
+We can also know the standard deviation which is **0.0613**.
+
+
+```{r}
+boot.ci(boot.out=bootstrap_correlation,type=c('norm','basic','perc','bca'))
+```
+
+![ci](Images/ci.png)
+
+The above function shows the confidence interval of the normal, basic, percentile and bca distribution.
+
+**Simulation**
+
+I have performed the simulation function to generate the similar data as per the dataset. 
+
+```{r}
+head(avocado)
+mean(avocado$TotalVolume)
+sd(avocado$TotalVolume)
+```
+
+```{r}
+sim <- rnorm(100,mean=260000,sd=190000)
+sim
+```
+
+![sim](Images/sim.png)
+
+
+```{r}
+summary(sim)
+```
+
+
+```{r}
+boxplot(sim)
+```
+
+
+**Regression**
+
+I have used the regression function to know the dependent and independent variable. Additionally, it also helped me predict the number of sales using the regression function.
+
+```{r}
+sale <- read.csv("sales.csv")
+sale
+
+relation <- lm(NumberofSales~price, data = sale)
+
+summary(relation)
+
+
+# lm()
+```
+
+![ref](Images/ref.png)
+
+**Descriptive Statistics**
+
+Through the descriptive statistics, I have performed min, max, range, standard deviation, quartile, variance, range, and media.
+
+```{r}
+foods <- read.csv("Food_Calories.csv")
+head(foods)
+```
+
+*Renamed the column names*
+
+```{r}
+colnames(foods)[2] <- "Serving_per_gram"
+head(foods)
+```
+
+```{r}
+library(ggplot2)
+```
+
+*Taking a random sample of 10%*
+
+```{r}
+New_Foods <- sample_frac(foods, 0.1)
+head(New_Foods)
+
+```
+
+```{r}
+hist(foods$Calories)
+```
+
+
+**Conclusion for Objective 3 on how I met the objectives**
+
+I have performed all the course activities and have completed the simulation, bootstrapping, regression and descriptive statistics and I have got a in-depth knowledge of working on it. I performed bootstrapping to resample the data 10000 times and was able to find the confidence interval and to get the conclusion on data using the resmapling methods. Similarly, I have performed simulation and have explored the data using the descriptive statistics as well. Furthermore, I have performed and applied different function to perform a common analysis. Hence, I believe I have met the objective 3.
+
+
+**Objective 4: Use source documentation and other resources to troubleshoot and extend R programs.**
+
+While doing the projects, I faced lots of error. However, all that error is the reason for which I have gained an in-depth knowledge in R, its function and to know the R package. Troubleshooting those error, researching, going through the course work and the activities again, referring to the stackoverflow helped me alot in understanding R to its fullest. 
+
+The one example of my troubleshooting was I had load both the dplyr library and MASS library and both of the library had the select function. So, when loading my select function of the dplyr it showed an error saying the unused argument. Then looking at the stackoverflow, I found out that I need to mention which library should the select function use. Hence, I performed below code and that executed my code.
+
+
+```{r}
+New_Data = read.csv("New_Data.csv")
+Trend <- New_Data %>%
+  dplyr::select(City, Year, Sale_Price) %>%
+  group_by(City, Year) %>%
+  summarise(Average_Sale_Price = mean(Sale_Price)) 
+
+  
+```
+
+
+Similarly, in terms of extending the R program, I used a new library called gganimate which I used in my Shiny app that had a layered animation in the line graph. This was a thing I'm proud of as I learned new things beside the course activities and was really interesting as well. 
+
+```{r}
+
+
+# output$linegraph <-renderImage({
+#     Four_Cities <- read.csv(file ='Four_Cities.csv')
+# 
+#     outfile <- tempfile(fileext='.gif')
+#     q= ggplot(Four_Cities, aes(x = Year, y = Avg_Sale_Price, colour = City))+
+#       geom_line(stat='identity')+ theme_bw() + transition_reveal(Year)
+# 
+#     anim_save("linegraph.gif", animate(q,height=400,width=800,fps=20,duration=20,end_pause=60,res=120))
+#     list(src = "linegraph.gif",
+#          contentType = 'image/gif'
+# 
+#     )}, deleteFile = FALSE)
+
+```
+
+**Conclusion of Objective 4 on how I met my objectives**
+
+I believe I have performed all the task and I'm able to troubleshoot the error on my own. Also, I can now use new library functions and packages. Hence, I believe I have met the Objective 4.
+
+**Objective5: Write clear, efficient, and well-documented R programs.**
+
+**Conclusion on Objective 5 on how I met my objectives.**
+
+I have a good amount of knowledge in writing R codes and in RMD files. I have completed all my self reflection in RMD file where I have used the heading, bold and italics option. Additionally, I have attached the images in R Markdown using the function. So, I believe I can write clear, efficient, organized and a well-documented R program.
+
+
+### Based on the progress you have made (i.e., see your response in (3)), what final grade would you give yourself for this course? Try to stick to the major grade levels (“A”, “B”, “C”, or “D or below”). Please reach out to me if you have concerns or were unable to finish your final project.###
+
+My learning towards this course was always progressive through the class activities and my final projects. Hence, I would like to give myself an **“A”** as per the objectives I have met towards the course. The class activities helped me grasp the basic knowledge of R. Similarly, implementing all the learning into my project and implementing all the objectives enhanced my understanding of R in-depth.
+
+
+### Do you have any other thoughts or reflections about the course that you'd like to share? ###
+
+The course and resources were really helpful for me. I could get back to the course material when I used to get an error. Also, I could revise it at all times. As of my experience, I really believed the activities really helps the student grasp the basic knowledge and it will help each student to apply it in their project. This course has enhanced my knowledge towards R. Furthermore, I am planning to continue with my project and work on analyzing different variables apart from the sale price. As discussed during our one on one, I will also work on building my portfolio during the summer.
+
+
+
